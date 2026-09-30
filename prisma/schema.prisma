@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  description  String?
+  status       Status        @default(ACTIVE)
+  sortOrder    Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  technologies Technology[]
+  projects     Project[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model Technology {
+  id          String      @id @default(cuid())
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String
+  slug        String      @unique
+  description String?
+  status      Status      @default(ACTIVE)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  projects    Project[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Project {
+  id               String         @id @default(cuid())
+  categoryId       String
+  category         Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  technologyId     String
+  technology       Technology     @relation(fields: [technologyId], references: [id], onDelete: Restrict)
+  name             String
+  slug             String         @unique
+  shortDescription String
+  description      String         @db.Text
+  projectUrl       String
+  appStoreUrl      String?
+  playStoreUrl     String?
+  githubUrl        String?
+  imageUrl         String?
+  featured         Boolean        @default(false)
+  status           ProjectStatus  @default(ACTIVE)
+  sortOrder        Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  links            ProjectLink[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([technologyId])
+  @@index([status])
+  @@index([featured])
+}
+
+model ProjectLink {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  label     String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model DeveloperPortfolio {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  role      String?  @default("Developer")
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
