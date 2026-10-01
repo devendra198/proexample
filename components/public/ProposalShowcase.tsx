@@ -138,11 +138,11 @@ export function ProposalShowcase({
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [includeNames, setIncludeNames] = useState(false);
-  const [showDetails, setShowDetails] = useState<boolean>(true);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [selectedSubFilter, setSelectedSubFilter] = useState<string>("all");
 
-  // Read saved preference from localStorage if available, default to true
+  // Read saved preference from localStorage if available, default to false
   useEffect(() => {
     try {
       const saved = localStorage.getItem("proposal_show_details");
@@ -476,8 +476,8 @@ export function ProposalShowcase({
                 }`}
               title={
                 showDetails
-                  ? "Details buttons are enabled by default (Click to hide)"
-                  : "Details buttons are hidden (Click to show)"
+                  ? "Details buttons are enabled (Click to hide)"
+                  : "Details buttons are off by default (Click to show)"
               }
             >
               <Eye className={`h-3.5 w-3.5 ${showDetails ? "text-slate-700" : "text-slate-400"}`} />
