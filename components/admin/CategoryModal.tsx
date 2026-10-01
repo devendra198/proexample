@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { X } from "lucide-react";
 import { slugify } from "@/lib/utils";
 
@@ -89,10 +90,12 @@ export function CategoryModal({
         throw new Error(data.error || "Failed to save category");
       }
 
+      toast.success(isEditing ? "Category updated successfully!" : "Category created successfully!");
       onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message);
+      toast.error(err.message || "Failed to save category");
     } finally {
       setLoading(false);
     }

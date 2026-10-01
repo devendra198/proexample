@@ -26,12 +26,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const badgeStyle = getTechBadgeColor(project.technology.name);
 
   return (
-    <div className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300 hover:shadow-md">
+    <div
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 220px" }}
+      className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:border-slate-300 hover:shadow-md"
+    >
       <div>
         {/* Technology badge and optional featured star */}
         <div className="flex items-center justify-between gap-2 mb-3.5">
           <Link
             href={`/technology/${project.technology.slug}`}
+            prefetch={true}
             className={`inline-block rounded-md px-2.5 py-0.5 text-xs font-semibold border transition-opacity hover:opacity-80 ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}
           >
             {project.technology.name}
@@ -47,7 +51,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Project Name */}
         <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-          <Link href={`/projects/${project.slug}`}>
+          <Link href={`/projects/${project.slug}`} prefetch={true}>
             {project.name}
           </Link>
         </h3>
@@ -62,6 +66,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
         <Link
           href={`/projects/${project.slug}`}
+          prefetch={true}
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition-colors"
         >
           <span>View Project</span>

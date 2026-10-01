@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { Plus, Pencil, Trash2, ExternalLink, Globe } from "lucide-react";
 import { DeveloperPortfolioModal } from "./DeveloperPortfolioModal";
 import { ConfirmModal } from "./ConfirmModal";
@@ -43,11 +44,12 @@ export function DeveloperPortfolioListClient({
         throw new Error(data.error || "Failed to delete developer portfolio");
       }
 
+      toast.success("Developer portfolio deleted successfully!");
       setDeleteModalOpen(false);
       setDeleteTarget(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete developer portfolio");
     } finally {
       setDeleteLoading(false);
     }

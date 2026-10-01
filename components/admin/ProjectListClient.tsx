@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import {
   Plus,
   Pencil,
@@ -120,11 +121,12 @@ export function ProjectListClient({
         throw new Error(data.error || "Failed to delete project");
       }
 
+      toast.success("Project deleted successfully!");
       setDeleteModalOpen(false);
       setDeleteTarget(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete project");
     } finally {
       setDeleteLoading(false);
     }
@@ -141,9 +143,10 @@ export function ProjectListClient({
         }),
       });
       if (!res.ok) throw new Error("Failed to update");
+      toast.success(!project.featured ? "Project marked as featured!" : "Project unfeatured!");
       router.refresh();
     } catch (e) {
-      alert("Error updating featured status");
+      toast.error("Error updating featured status");
     }
   };
 

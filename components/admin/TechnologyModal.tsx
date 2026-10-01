@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { X } from "lucide-react";
 import { slugify } from "@/lib/utils";
 
@@ -103,10 +104,12 @@ export function TechnologyModal({
         throw new Error(data.error || "Failed to save technology");
       }
 
+      toast.success(isEditing ? "Technology updated successfully!" : "Technology created successfully!");
       onSuccess();
       onClose();
     } catch (err: any) {
       setError(err.message);
+      toast.error(err.message || "Failed to save technology");
     } finally {
       setLoading(false);
     }

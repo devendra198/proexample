@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { Plus, Pencil, Trash2, CheckCircle2, XCircle, ArrowUpDown } from "lucide-react";
 import { CategoryModal } from "./CategoryModal";
 import { ConfirmModal } from "./ConfirmModal";
@@ -43,9 +44,10 @@ export function CategoryListClient({ initialCategories }: { initialCategories: C
           sortOrder: cat.sortOrder,
         }),
       });
+      toast.success(`Category set to ${nextStatus.toLowerCase()}`);
       router.refresh();
     } catch (e) {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -68,11 +70,12 @@ export function CategoryListClient({ initialCategories }: { initialCategories: C
         throw new Error(data.error || "Failed to delete");
       }
 
+      toast.success("Category deleted successfully!");
       setDeleteModalOpen(false);
       setDeleteTarget(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete category");
     } finally {
       setDeleteLoading(false);
     }

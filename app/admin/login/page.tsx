@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { Lock, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function AdminLoginPage() {
@@ -30,10 +31,12 @@ export default function AdminLoginPage() {
         throw new Error(data.error || "Authentication failed");
       }
 
+      toast.success("Welcome back! Logged in successfully.");
       router.push("/admin");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Invalid email or password");
+      toast.error(err.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Search, Filter } from "lucide-react";
 import { TechnologyModal } from "./TechnologyModal";
 import { ConfirmModal } from "./ConfirmModal";
@@ -80,9 +81,10 @@ export function TechnologyListClient({
           sortOrder: tech.sortOrder,
         }),
       });
+      toast.success(`Technology set to ${nextStatus.toLowerCase()}`);
       router.refresh();
     } catch (e) {
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 
@@ -105,11 +107,12 @@ export function TechnologyListClient({
         throw new Error(data.error || "Failed to delete");
       }
 
+      toast.success("Technology deleted successfully!");
       setDeleteModalOpen(false);
       setDeleteTarget(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete technology");
     } finally {
       setDeleteLoading(false);
     }

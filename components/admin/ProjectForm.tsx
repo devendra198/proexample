@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { slugify, formatUrl } from "@/lib/utils";
 import { Globe, AlertCircle, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 
@@ -144,10 +145,12 @@ export function ProjectForm({
         throw new Error(data.error || "Failed to save project");
       }
 
+      toast.success(isEditing ? "Project updated successfully!" : "Project created successfully!");
       router.push("/admin/projects");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Failed to save project");
+      toast.error(err.message || "Failed to save project");
     } finally {
       setLoading(false);
     }

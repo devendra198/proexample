@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import {
   Folder,
   FileCode,
@@ -146,11 +147,12 @@ export function AdminDashboardClient({
         throw new Error(data.error || "Failed to delete item");
       }
 
+      toast.success("Item deleted successfully!");
       setDeleteModalOpen(false);
       setDeleteTarget(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete item");
     } finally {
       setDeleteLoading(false);
     }
@@ -202,6 +204,7 @@ export function AdminDashboardClient({
         throw new Error(data.error || "Failed to add project");
       }
 
+      toast.success("Project added successfully!");
       // Reset form
       setQuickTitle("");
       setQuickDescription("");
@@ -211,6 +214,7 @@ export function AdminDashboardClient({
       router.refresh();
     } catch (err: any) {
       setQuickError(err.message);
+      toast.error(err.message || "Failed to add project");
     } finally {
       setQuickLoading(false);
     }

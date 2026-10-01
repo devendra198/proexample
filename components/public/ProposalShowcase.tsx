@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Copy, Check, ExternalLink, Search, Filter, Pin, User, X, FileText, Eye, EyeOff } from "lucide-react";
 
 interface ProjectItem {
@@ -163,9 +164,13 @@ export function ProposalShowcase({
     });
   };
 
-  const handleCopy = (text: string, id: string) => {
+  const handleCopy = (text: string, id: string, message?: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
+    toast.success(message || "Copied to clipboard!", {
+      toastId: id,
+      autoClose: 1800,
+    });
     setTimeout(() => {
       setCopiedId(null);
     }, 2000);
@@ -567,7 +572,10 @@ export function ProposalShowcase({
       <div className="space-y-8">
         {/* SEPARATE DEVELOPER PORTFOLIOS SECTION */}
         {showDevSection && filteredDevelopers.length > 0 && (
-          <div className="relative rounded-2xl bg-[#1b1c1e] text-slate-100 p-6 sm:p-7 shadow-xl border border-blue-900/40 hover:border-blue-600/50 transition-all font-sans overflow-hidden">
+          <div
+            style={{ contentVisibility: "auto", containIntrinsicSize: "1px 400px" }}
+            className="relative rounded-2xl bg-[#1b1c1e] text-slate-100 p-6 sm:p-7 shadow-xl border border-blue-900/40 hover:border-blue-600/50 transition-all font-sans overflow-hidden"
+          >
             {/* Decorative top accent glow bar */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-500" />
 
@@ -593,7 +601,7 @@ export function ProposalShowcase({
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => handleCopy(allDevsCopyText, "devs-all")}
+                  onClick={() => handleCopy(allDevsCopyText, "devs-all", "Copied all developer portfolios to clipboard!")}
                   className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${copiedId === "devs-all"
                       ? "bg-emerald-600 text-white"
                       : "bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700"
@@ -649,7 +657,7 @@ export function ProposalShowcase({
                     {/* Separate Copy Button for each portfolio link */}
                     <div className="flex items-center justify-between pt-2 border-t border-slate-800/50">
                       <button
-                        onClick={() => handleCopy(copyText, `dev-${dev.id}`)}
+                        onClick={() => handleCopy(copyText, `dev-${dev.id}`, `Copied ${dev.name}'s portfolio link!`)}
                         className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isCopied
                             ? "bg-emerald-600 text-white"
                             : "bg-slate-800 text-slate-200 hover:bg-blue-600 hover:text-white border border-slate-700 shadow-sm"
@@ -699,6 +707,7 @@ export function ProposalShowcase({
             return (
               <div
                 key={category.id}
+                style={{ contentVisibility: "auto", containIntrinsicSize: "1px 600px" }}
                 className={`relative rounded-2xl bg-[#1b1c1e] text-slate-100 p-6 sm:p-7 shadow-xl border ${theme.cardBorder} transition-all font-sans overflow-hidden`}
               >
                 {/* Decorative top accent glow bar */}
@@ -731,7 +740,7 @@ export function ProposalShowcase({
 
                   <div className="flex flex-wrap items-center gap-2">
                     <button
-                      onClick={() => handleCopy(categoryUrlsOnlyText, `cat-${category.id}`)}
+                      onClick={() => handleCopy(categoryUrlsOnlyText, `cat-${category.id}`, `Copied all ${category.name} links!`)}
                       className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isCategoryCopied
                           ? "bg-emerald-600 text-white"
                           : "bg-slate-800 text-slate-200 hover:bg-blue-600 hover:text-white border border-slate-700"
@@ -753,7 +762,7 @@ export function ProposalShowcase({
 
                     {showDetails && (
                       <button
-                        onClick={() => handleCopy(categoryDetailsText, `cat-details-${category.id}`)}
+                        onClick={() => handleCopy(categoryDetailsText, `cat-details-${category.id}`, `Copied ${category.name} with full details!`)}
                         className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${isCategoryDetailsCopied
                             ? "bg-emerald-600 text-white"
                             : "bg-slate-800 text-slate-200 hover:bg-indigo-600 hover:text-white border border-slate-700"
@@ -810,7 +819,7 @@ export function ProposalShowcase({
                           </h3>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleCopy(techUrlsOnlyText, `tech-${tech.id}`)}
+                              onClick={() => handleCopy(techUrlsOnlyText, `tech-${tech.id}`, `Copied ${tech.name} links!`)}
                               className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${isTechCopied
                                   ? "bg-emerald-600 text-white"
                                   : "bg-slate-800/90 text-slate-300 hover:bg-blue-600 hover:text-white border border-slate-700"
@@ -832,7 +841,7 @@ export function ProposalShowcase({
 
                             {showDetails && (
                               <button
-                                onClick={() => handleCopy(techDetailsText, `tech-details-${tech.id}`)}
+                                onClick={() => handleCopy(techDetailsText, `tech-details-${tech.id}`, `Copied ${tech.name} with full details!`)}
                                 className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${isTechDetailsCopied
                                     ? "bg-emerald-600 text-white"
                                     : "bg-slate-800/90 text-slate-300 hover:bg-indigo-600 hover:text-white border border-slate-700"
@@ -883,7 +892,7 @@ export function ProposalShowcase({
                                     <div className="flex items-center gap-1.5">
                                       {showDetails && (
                                         <button
-                                          onClick={() => handleCopy(appDetailsText, `proj-app-details-${project.id}`)}
+                                          onClick={() => handleCopy(appDetailsText, `proj-app-details-${project.id}`, `Copied ${project.name} with details!`)}
                                           className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-all ${isAppDetailsCopied
                                               ? "bg-emerald-600 text-white shadow-sm"
                                               : "bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white border border-slate-700"
@@ -904,7 +913,7 @@ export function ProposalShowcase({
                                         </button>
                                       )}
                                       <button
-                                        onClick={() => handleCopy(appUrlsOnlyText, `proj-app-${project.id}`)}
+                                        onClick={() => handleCopy(appUrlsOnlyText, `proj-app-${project.id}`, `Copied ${project.name} app links!`)}
                                         className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-all ${isAppCopied
                                             ? "bg-emerald-600 text-white"
                                             : "bg-slate-800 text-slate-300 hover:bg-blue-600 hover:text-white border border-slate-700"
@@ -1083,7 +1092,7 @@ export function ProposalShowcase({
                                 <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
                                   {showDetails && (
                                     <button
-                                      onClick={() => handleCopy(projectDetailSnippet, `proj-detail-${project.id}`)}
+                                      onClick={() => handleCopy(projectDetailSnippet, `proj-detail-${project.id}`, `Copied ${project.name} with details!`)}
                                       className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-all ${isDetailCopied
                                           ? "bg-emerald-600 text-white shadow-sm"
                                           : "bg-slate-800 text-slate-300 hover:bg-indigo-600 hover:text-white border border-slate-700"
@@ -1105,7 +1114,7 @@ export function ProposalShowcase({
                                   )}
 
                                   <button
-                                    onClick={() => handleCopy(project.projectUrl, `proj-${project.id}`)}
+                                    onClick={() => handleCopy(project.projectUrl, `proj-${project.id}`, `Copied ${project.name} URL!`)}
                                     className={`rounded p-1 transition-colors ${isUrlCopied
                                         ? "bg-emerald-600/30 text-emerald-400"
                                         : "text-slate-400 hover:bg-slate-700 hover:text-white"

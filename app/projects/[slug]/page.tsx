@@ -209,6 +209,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 <img
                   src={project.imageUrl}
                   alt={project.name}
+                  loading="lazy"
+                  decoding="async"
                   className="rounded-xl border border-slate-200 w-full object-cover max-h-96"
                 />
               </div>
