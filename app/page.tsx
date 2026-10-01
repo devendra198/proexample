@@ -3,55 +3,73 @@ import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
 import { ProposalShowcase } from "@/components/public/ProposalShowcase";
 
-export const dynamic = "force-dynamic";
+import { unstable_cache } from "next/cache";
 
-export default async function HomePage() {
-  // Fetch active categories and developer portfolios in parallel
-  const [categories, developerPortfolios] = await Promise.all([
-    prisma.category.findMany({
-      where: { status: "ACTIVE" },
-      orderBy: { sortOrder: "asc" },
-      include: {
-        technologies: {
-          where: { status: "ACTIVE" },
-          orderBy: { sortOrder: "asc" },
-          include: {
-            projects: {
-              where: { status: "ACTIVE" },
-              orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
-              select: {
-                id: true,
-                name: true,
-                shortDescription: true,
-                description: true,
-                projectUrl: true,
-                appStoreUrl: true,
-                playStoreUrl: true,
-                featured: true,
+export const revalidate = 60;
+
+const getHomePageData = unstable_cache(
+  async () => {
+    // Fetch active categories and developer portfolios in parallel
+    const [categories, developerPortfolios] = await Promise.all([
+      prisma.category.findMany({
+        where: { status: "ACTIVE" },
+        orderBy: { sortOrder: "asc" },
+        include: {
+          technologies: {
+            where: { status: "ACTIVE" },
+            orderBy: { sortOrder: "asc" },
+            include: {
+              projects: {
+                where: { status: "ACTIVE" },
+                orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
+                select: {
+                  id: true,
+                  name: true,
+                  shortDescription: true,
+                  description: true,
+                  projectUrl: true,
+                  appStoreUrl: true,
+                  playStoreUrl: true,
+                  featured: true,
+                },
               },
             },
           },
         },
-      },
-    }),
-    prisma.developerPortfolio.findMany({
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      select: {
-        id: true,
-        name: true,
-        url: true,
-        role: true,
-      },
-    }),
-  ]);
+      }),
+      prisma.developerPortfolio.findMany({
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          url: true,
+          role: true,
+        },
+      }),
+    ]);
 
-  // Filter out technologies that have 0 projects for cleaner proposal view
-  const categoriesWithProjects = categories
-    .map((cat) => ({
-      ...cat,
-      technologies: cat.technologies.filter((t) => t.projects.length > 0),
-    }))
-    .filter((cat) => cat.technologies.length > 0);
+    // Filter out technologies that have 0 projects for cleaner proposal view
+    const categoriesWithProjects = categories
+      .map((cat) => ({
+        ...cat,
+        technologies: cat.technologies.filter((t) => t.projects.length > 0),
+      }))
+      .filter((cat) => cat.technologies.length > 0);
+
+    return {
+      categoriesWithProjects,
+      developerPortfolios: developerPortfolios.map((d) => ({
+        ...d,
+        role: d.role || "Developer",
+      })),
+    };
+  },
+  ["home-page-data"],
+  { revalidate: 60, tags: ["projects", "categories", "developer-portfolios"] }
+);
+
+export default async function HomePage() {
+  const { categoriesWithProjects, developerPortfolios } = await getHomePageData();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">

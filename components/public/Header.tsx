@@ -25,7 +25,7 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
+        <Link href="/" prefetch={true} className="flex items-center gap-2 font-bold text-xl tracking-tight text-slate-900">
           <span>Pro-Example</span>
         </Link>
 
@@ -37,6 +37,7 @@ export function Header() {
               <Link
                 key={link.name}
                 href={link.href}
+                prefetch={true}
                 className={`relative py-1 text-sm font-medium transition-colors hover:text-blue-600 ${active ? "text-slate-900 font-semibold" : "text-slate-600"
                   }`}
               >
@@ -53,6 +54,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="/admin"
+            prefetch={true}
             className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Admin Login
@@ -80,6 +82,7 @@ export function Header() {
               <Link
                 key={link.name}
                 href={link.href}
+                prefetch={true}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block rounded-md px-3 py-2 text-base font-medium ${isActive(link.href)
                     ? "bg-slate-100 text-slate-900 font-semibold"
@@ -93,6 +96,7 @@ export function Header() {
           <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2">
             <Link
               href="/admin"
+              prefetch={true}
               onClick={() => setMobileMenuOpen(false)}
               className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700"
             >

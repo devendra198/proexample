@@ -4,7 +4,9 @@ import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
 import { ProjectsExplorer } from "@/components/public/ProjectsExplorer";
 
-export const dynamic = "force-dynamic";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "All Projects | Pro-Example Portfolio",
@@ -21,34 +23,41 @@ interface ProjectsPageProps {
   };
 }
 
+const getProjectsExplorerData = unstable_cache(
+  async () => {
+    const [categories, technologies, projects] = await Promise.all([
+      prisma.category.findMany({
+        where: { status: "ACTIVE" },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, slug: true },
+      }),
+      prisma.technology.findMany({
+        where: { status: "ACTIVE" },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, name: true, slug: true, categoryId: true },
+      }),
+      prisma.project.findMany({
+        where: { status: "ACTIVE" },
+        orderBy: [
+          { featured: "desc" },
+          { sortOrder: "asc" },
+          { createdAt: "desc" },
+        ],
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          technology: { select: { id: true, name: true, slug: true } },
+        },
+      }),
+    ]);
+
+    return { categories, technologies, projects };
+  },
+  ["projects-explorer-data"],
+  { revalidate: 60, tags: ["projects", "categories", "technologies"] }
+);
+
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
-  // Fetch active categories
-  const categories = await prisma.category.findMany({
-    where: { status: "ACTIVE" },
-    orderBy: { sortOrder: "asc" },
-    select: { id: true, name: true, slug: true },
-  });
-
-  // Fetch active technologies
-  const technologies = await prisma.technology.findMany({
-    where: { status: "ACTIVE" },
-    orderBy: { sortOrder: "asc" },
-    select: { id: true, name: true, slug: true, categoryId: true },
-  });
-
-  // Fetch all active projects
-  const projects = await prisma.project.findMany({
-    where: { status: "ACTIVE" },
-    orderBy: [
-      { featured: "desc" },
-      { sortOrder: "asc" },
-      { createdAt: "desc" },
-    ],
-    include: {
-      category: { select: { id: true, name: true, slug: true } },
-      technology: { select: { id: true, name: true, slug: true } },
-    },
-  });
+  const { categories, technologies, projects } = await getProjectsExplorerData();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50">

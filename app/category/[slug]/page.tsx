@@ -8,7 +8,9 @@ import { ProjectCard, type ProjectCardItem } from "@/components/public/ProjectCa
 import { TechnologyChip } from "@/components/public/TechnologyChip";
 import { ArrowLeft, Folder, Layers } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 60;
 
 interface CategoryDirectoryItem {
   id: string;
@@ -41,6 +43,29 @@ interface CategoryPageProps {
   };
 }
 
+const getAllCategoriesData = unstable_cache(
+  async () => {
+    return prisma.category.findMany({
+      where: { status: "ACTIVE" },
+      orderBy: { sortOrder: "asc" },
+      include: {
+        _count: {
+          select: {
+            technologies: { where: { status: "ACTIVE" } },
+            projects: { where: { status: "ACTIVE" } },
+          },
+        },
+        technologies: {
+          where: { status: "ACTIVE" },
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+    });
+  },
+  ["categories-directory-data"],
+  { revalidate: 60, tags: ["categories", "technologies", "projects"] }
+);
+
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
@@ -68,22 +93,7 @@ export async function generateMetadata({
 export default async function CategoryPage({ params }: CategoryPageProps) {
   // If slug is "all", show the category directory
   if (params.slug === "all") {
-    const allCategories = await prisma.category.findMany({
-      where: { status: "ACTIVE" },
-      orderBy: { sortOrder: "asc" },
-      include: {
-        _count: {
-          select: {
-            technologies: { where: { status: "ACTIVE" } },
-            projects: { where: { status: "ACTIVE" } },
-          },
-        },
-        technologies: {
-          where: { status: "ACTIVE" },
-          orderBy: { sortOrder: "asc" },
-        },
-      },
-    });
+    const allCategories = await getAllCategoriesData();
 
     return (
       <div className="min-h-screen flex flex-col bg-slate-50/50">
